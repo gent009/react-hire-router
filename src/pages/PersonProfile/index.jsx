@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import HireForm from "./components/HireForm";
 
 function PersonProfile(props) {
   const { hiredPeople, setHiredPeople } = props;
   const { id } = useParams();
-  const [person, setPerson] = useState(null);
+  const location = useLocation();
   const navigate = useNavigate();
+  const [person, setPerson] = useState(location.state?.person || null);
 
   useEffect(() => {
-    fetch(`https://randomuser.me/api/?uuid=${id}`)
-      .then((response) => response.json())
-      .then((data) => setPerson(data.results[0]));
-  }, [id]);
+    if (!person && location.state) {
+      setPerson(location.state.person);
+    }
+  }, [location.state, person]);
 
   function handleHire(wage) {
     setHiredPeople([...hiredPeople, { ...person, wage }]);
